@@ -1,36 +1,186 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
- <meta charset="UTF-8">
- <meta name="viewport" content="width=device-width, initial-scale=1">
- <title>Circle Area Calculator</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Circle Area Calculator</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-primary: #334155;
+            --text-secondary: #64748b;
+            --accent-color: #8cb3a1;
+            --accent-hover: #7aa290;
+            --accent-disabled: #cbd5e1;
+            --input-border: #e2e8f0;
+            --input-focus: #b2cfc1;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .calculator-card {
+            background-color: var(--card-bg);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+
+        .input-group {
+            text-align: left;
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 1rem;
+            border: 1px solid var(--input-border);
+            border-radius: 12px;
+            background-color: #fafafa;
+            color: var(--text-primary);
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        input[type="number"]:focus {
+            border-color: var(--input-focus);
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(140, 179, 161, 0.15);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            font-size: 1rem;
+            font-weight: 500;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        button:hover:not(:disabled) {
+            background-color: var(--accent-hover);
+        }
+
+        button:disabled {
+            background-color: var(--accent-disabled);
+            color: var(--text-secondary);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .result-box {
+            margin-top: 28px;
+            padding: 16px;
+            border-radius: 12px;
+            background-color: #fafafa;
+            border: 1px dashed var(--input-border);
+            min-height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #result {
+            margin: 0;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+        
+        #result.has-value {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+    </style>
 </head>
 <body>
- <h1>Circle Area Calculator</h1>
- <label for="radius">Enter radius:</label>
- <input id="radius" type="number" min="0" step="any" value="5">
- <button id="calculate" onclick="calculate()" disabled>Loading C++...</button>
- <p id="result">Result will appear here.</p>
- <script>
- var Module = {
- onRuntimeInitialized: function () {
- const button = document.getElementById("calculate");
- button.disabled = false;
- button.textContent = "Calculate Area";
- }
- };
- function calculate() {
- const raw = document.getElementById("radius").value;
- const radius = Number(raw);
- const result = document.getElementById("result");
- if (raw.trim() === "" || !Number.isFinite(radius) || radius < 0) {
- result.textContent = "Please enter a valid non-negative radius.";
- return;
- }
- const area = Module.ccall("calculateArea", "number", ["number"], [radius]);
- result.textContent = "Area = " + area.toFixed(2) + " square units";
- }
- </script>
- <script src="circle.js"></script>
+
+    <div class="calculator-card">
+        <h1>Circle Area Calculator</h1>
+        <div class="subtitle">WebAssembly Powered Execution</div>
+
+        <div class="input-group">
+            <label for="radius">Enter radius:</label>
+            <input id="radius" type="number" min="0" step="any" value="5">
+        </div>
+
+        <button id="calculate" onclick="calculate()" disabled>Loading C++...</button>
+
+        <div class="result-box">
+            <p id="result">Result will appear here.</p>
+        </div>
+    </div>
+
+    <script>
+        var Module = {
+            onRuntimeInitialized: function () {
+                const button = document.getElementById("calculate");
+                button.disabled = false;
+                button.textContent = "Calculate Area";
+            }
+        };
+
+        function calculate() {
+            const raw = document.getElementById("radius").value;
+            const radius = Number(raw);
+            const result = document.getElementById("result");
+
+            if (raw.trim() === "" || !Number.isFinite(radius) || radius < 0) {
+                result.classList.remove("has-value");
+                result.textContent = "Please enter a valid non-negative radius.";
+                return;
+            }
+
+            const area = Module.ccall("calculateArea", "number", ["number"], [radius]);
+            result.classList.add("has-value");
+            result.textContent = "Area = " + area.toFixed(2) + " square units";
+        }
+    </script>
+    <script src="circle.js"></script>
 </body>
 </html>
